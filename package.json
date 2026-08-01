@@ -12,6 +12,7 @@
     "build:data": "npm run ingest && npm run embed",
     "upload:r2": "node scripts/upload.mjs",
     "indexnow": "node scripts/indexnow.mjs",
+    "analytics": "node scripts/analytics.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

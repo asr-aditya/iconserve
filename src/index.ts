@@ -9,6 +9,7 @@ import { handleMcp } from "./lib/mcp";
 import { robotsTxt, sitemapXml, sitemapMd, llmsFullTxt } from "./lib/seo";
 import { renderIconPage, renderIconMarkdown, bestIconPageRedirect, renderAgentsPage, renderAgentsMarkdown } from "./lib/pages";
 import { apiCatalog, mcpServerCard, homepageMarkdown, agentSkillsIndex, findSkill, agentsMd, discoveryLinkHeader } from "./lib/wellknown";
+import { logRequest } from "./lib/analytics";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 
@@ -38,8 +39,7 @@ async function cachedIcon(request: Request, ctx: ExecutionContext, produce: () =
   return resp;
 }
 
-export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     const origin = url.origin;
     const path = url.pathname;
@@ -211,5 +211,18 @@ export default {
     } catch (err: any) {
       return json({ error: "internal_error", detail: String(err?.message || err) }, 500);
     }
+}
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    let res: Response;
+    try {
+      res = await route(request, env, ctx);
+    } catch (err: any) {
+      res = json({ error: "internal_error", detail: String(err?.message || err) }, 500);
+    }
+    logRequest(env, request, url, res.status);
+    return res;
   },
 } satisfies ExportedHandler<Env>;

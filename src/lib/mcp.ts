@@ -3,6 +3,7 @@ import { getCatalog } from "./store";
 import { search } from "./search";
 import { renderIcon } from "./icons";
 import { svgUrl } from "./urls";
+import { logMcp } from "./analytics";
 
 // Minimal stateless Streamable-HTTP MCP server (JSON-RPC 2.0 over POST).
 const PROTOCOL_VERSION = "2024-11-05";
@@ -125,6 +126,8 @@ export async function handleMcp(request: Request, env: Env, origin: string): Pro
 
   const handle = async (msg: any) => {
     const { id, method, params } = msg || {};
+    if (method && method !== "notifications/initialized")
+      logMcp(env, request, method, method === "tools/call" ? String(params?.name || "") : "");
     switch (method) {
       case "initialize":
         return rpcResult(id, {

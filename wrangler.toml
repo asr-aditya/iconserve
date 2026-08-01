@@ -23,6 +23,11 @@ binding = "AI"
 [observability]
 enabled = true
 
+# Analytics Engine — agent/human traffic + MCP funnel logging (query via scripts/analytics.mjs).
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "iconserve_events"
+
 [vars]
 DEFAULT_SET_ORDER = "lucide,heroicons,tabler,simple-icons"
 # IndexNow key — served at /{key}.txt so Bing/Yandex can verify ownership of ping submissions.

@@ -4,6 +4,7 @@ export interface Env {
   AI: Ai;
   DEFAULT_SET_ORDER: string;
   INDEXNOW_KEY?: string;
+  ANALYTICS?: AnalyticsEngineDataset;
 }
 
 export interface CatalogEntry {
