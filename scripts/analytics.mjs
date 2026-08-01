@@ -87,6 +87,12 @@ async function main() {
     ["tool", "calls"],
   );
 
+  console.log("\nUnclassified User-Agents (bot/unknown — candidates to add to the classifier):");
+  table(
+    await q(`SELECT blob10 AS user_agent, SUM(_sample_interval) AS hits FROM ${DATASET} WHERE ${WINDOW} AND blob1 = 'bot' AND blob10 != '' GROUP BY user_agent ORDER BY hits DESC LIMIT 15`),
+    ["user_agent", "hits"],
+  );
+
   console.log("\nTop referers (who links to us):");
   table(
     await q(`SELECT blob1 AS kind, SUM(_sample_interval) AS hits FROM ${DATASET} WHERE ${WINDOW} AND blob6 = '1' GROUP BY kind ORDER BY hits DESC`),

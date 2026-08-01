@@ -46,7 +46,8 @@ export function routeType(path: string): string {
 
 // Fixed blob/double schema (referenced as blob1..blobN / double1 in SQL queries):
 //   blob1 kind, blob2 family, blob3 routeType, blob4 httpMethod, blob5 country,
-//   blob6 hasReferer, blob7 path, blob8 mcpMethod, blob9 toolName; double1 status.
+//   blob6 hasReferer, blob7 path, blob8 mcpMethod, blob9 toolName,
+//   blob10 rawUserAgent (truncated); double1 status.
 export function logRequest(env: Env, request: Request, url: URL, status: number): void {
   if (!env.ANALYTICS) return;
   try {
@@ -55,7 +56,7 @@ export function logRequest(env: Env, request: Request, url: URL, status: number)
     const country = (request as any).cf?.country || "XX";
     env.ANALYTICS.writeDataPoint({
       indexes: [kind],
-      blobs: [kind, family, routeType(url.pathname), request.method, country, request.headers.get("referer") ? "1" : "0", url.pathname.slice(0, 96), "", ""],
+      blobs: [kind, family, routeType(url.pathname), request.method, country, request.headers.get("referer") ? "1" : "0", url.pathname.slice(0, 96), "", "", ua.slice(0, 160)],
       doubles: [status],
     });
   } catch {
@@ -73,7 +74,7 @@ export function logMcp(env: Env, request: Request, method: string, toolName: str
     const country = (request as any).cf?.country || "XX";
     env.ANALYTICS.writeDataPoint({
       indexes: [kind],
-      blobs: [kind, family, "mcp-rpc", request.method, country, "0", "/mcp", method || "", toolName || ""],
+      blobs: [kind, family, "mcp-rpc", request.method, country, "0", "/mcp", method || "", toolName || "", ua.slice(0, 160)],
       doubles: [1],
     });
   } catch {
