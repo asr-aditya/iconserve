@@ -7,6 +7,7 @@
 <title>IconServe — open-source icons for humans & AI agents</title>
 <meta name="description" content="Free SVG icon API with no API key — 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG. Agent-readable, with an MCP icon server, llms.txt, and natural-language search for AI agents." />
 <link rel="canonical" href="https://iconserve.icons-for-agents.workers.dev/" />
+<link rel="alternate" type="text/markdown" href="/index.md" />
 <meta name="robots" content="index, follow" />
 <meta property="og:title" content="IconServe — open-source icons for humans & AI agents" />
 <meta property="og:description" content="10,000+ open-source icons as SVG or PNG at predictable, agent-readable URLs. Search, recolor, resize. No API key." />
@@ -99,8 +100,9 @@
     </div>
   </header>
 
+  <main>
   <div class="search">
-    <input id="q" type="search" placeholder="Search 10,000+ icons — try “shopping cart”, “notification bell”, “github”…" autofocus />
+    <input id="q" type="search" aria-label="Search icons" placeholder="Search 10,000+ icons — try “shopping cart”, “notification bell”, “github”…" autofocus />
   </div>
   <p class="hint">Click any result to copy its URL. Powered by the same <code>/api/search</code> endpoint agents use.</p>
   <div id="results"></div>
@@ -142,6 +144,7 @@ https://YOUR_HOST/i/github.svg?format=png&amp;size=128</code></pre>
      Tabler (MIT), Simple Icons (CC0). Brand marks from Simple Icons are trademarks of their respective
      owners; use them per each brand's guidelines.</p>
 
+  </main>
   <footer>
     IconServe · aggregates open-source icon sets · <a href="/llms.txt">llms.txt</a> · <a href="/openapi.json">openapi.json</a>
   </footer>

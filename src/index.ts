@@ -1,14 +1,14 @@
 import type { Env } from "./types";
-import { json, text, svgResponse, pngResponse, notFound, badRequest, preflight } from "./lib/http";
+import { json, text, markdown, svgResponse, pngResponse, notFound, badRequest, preflight } from "./lib/http";
 import { renderIcon } from "./lib/icons";
 import { search } from "./lib/search";
 import { getCatalog } from "./lib/store";
 import { svgUrl } from "./lib/urls";
 import { llmsTxt, openApi } from "./lib/docs";
 import { handleMcp } from "./lib/mcp";
-import { robotsTxt, sitemapXml, llmsFullTxt } from "./lib/seo";
-import { renderIconPage, bestIconPageRedirect, renderAgentsPage } from "./lib/pages";
-import { apiCatalog, mcpServerCard, homepageMarkdown, agentSkillsIndex, findSkill } from "./lib/wellknown";
+import { robotsTxt, sitemapXml, sitemapMd, llmsFullTxt } from "./lib/seo";
+import { renderIconPage, renderIconMarkdown, bestIconPageRedirect, renderAgentsPage, renderAgentsMarkdown } from "./lib/pages";
+import { apiCatalog, mcpServerCard, homepageMarkdown, agentSkillsIndex, findSkill, agentsMd, discoveryLinkHeader } from "./lib/wellknown";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 
@@ -57,6 +57,9 @@ export default {
       if (path === "/llms-full.txt") return text(await llmsFullTxt(env, origin));
       if (path === "/openapi.json") return json(openApi(origin));
       if (path === "/robots.txt") return text(robotsTxt(origin));
+      if (path === "/AGENTS.md") return markdown(agentsMd(origin), discoveryLinkHeader(origin));
+      if (path === "/sitemap.md") return markdown(await sitemapMd(env, origin));
+      if (path === "/index.md") return markdown(homepageMarkdown(origin), discoveryLinkHeader(origin, [`<${origin}/>; rel="canonical"`]));
 
       // ---- Well-known agent-discovery endpoints ----
       if (path === "/.well-known/api-catalog")
@@ -77,12 +80,17 @@ export default {
           headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" },
         });
 
-      // ---- SEO pillar page ----
-      if (path === "/for-ai-agents") return renderAgentsPage(origin);
+      // ---- SEO pillar page (+ markdown mirror) ----
+      const acceptsMd = (request.headers.get("accept") || "").includes("text/markdown");
+      if (path === "/for-ai-agents.md") return renderAgentsMarkdown(origin);
+      if (path === "/for-ai-agents")
+        return acceptsMd ? renderAgentsMarkdown(origin) : renderAgentsPage(origin);
 
-      // ---- Per-icon HTML pages (crawlable, structured data) ----
+      // ---- Per-icon HTML pages (crawlable, structured data) + markdown mirror ----
       if (path.startsWith("/icon/")) {
-        const rest = path.slice("/icon/".length).replace(/\/$/, "");
+        const wantMd = path.endsWith(".md");
+        let rest = path.slice("/icon/".length).replace(/\/$/, "");
+        if (wantMd) rest = rest.slice(0, -".md".length);
         const slash = rest.indexOf("/");
         if (slash === -1) {
           const r = await bestIconPageRedirect(env, origin, decodeURIComponent(rest));
@@ -90,7 +98,10 @@ export default {
         }
         const set = decodeURIComponent(rest.slice(0, slash));
         const name = decodeURIComponent(rest.slice(slash + 1));
-        const page = await renderIconPage(env, origin, set, name);
+        const page =
+          wantMd || acceptsMd
+            ? await renderIconMarkdown(env, origin, set, name)
+            : await renderIconPage(env, origin, set, name);
         return page || notFound(`icon not found: ${set}/${name}`);
       }
 

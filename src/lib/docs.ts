@@ -69,10 +69,14 @@ Every icon has a crawlable HTML page with preview, usage, and JSON-LD structured
 
 ## Machine docs
 
-- OpenAPI:   ${origin}/openapi.json
-- Full docs: ${origin}/llms-full.txt
-- Sitemap:   ${origin}/sitemap.xml  (all ${total.toLocaleString()} icon pages)
-- Robots:    ${origin}/robots.txt
+- [OpenAPI](${origin}/openapi.json): full REST spec (OpenAPI 3.1).
+- [llms-full.txt](${origin}/llms-full.txt): expanded docs with set inventory and a worked example.
+- [Sitemap](${origin}/sitemap.xml): all ${total.toLocaleString()} icon pages (and [sitemap.md](${origin}/sitemap.md)).
+- [Robots](${origin}/robots.txt): crawl rules (AI bots welcome).
+- [API catalog](${origin}/.well-known/api-catalog): RFC 9727 linkset.
+- [MCP server card](${origin}/.well-known/mcp/server-card.json): MCP discovery.
+- [Agent skills](${origin}/.well-known/agent-skills/index.json): skill discovery index.
+- [AGENTS.md](${origin}/AGENTS.md): agent-oriented project guide.
 
 ## Licensing
 

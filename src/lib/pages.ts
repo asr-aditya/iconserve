@@ -2,6 +2,8 @@ import type { Env, CatalogEntry } from "../types";
 import { getCatalog, getIcons, resolveBest } from "./store";
 import { applyTransforms } from "./transform";
 import { svgUrl } from "./urls";
+import { markdown } from "./http";
+import { discoveryLinkHeader } from "./wellknown";
 
 export const SET_INFO: Record<string, { label: string; homepage: string; licenseUrl: string }> = {
   lucide: { label: "Lucide", homepage: "https://lucide.dev", licenseUrl: "https://opensource.org/license/isc-license-txt" },
@@ -87,6 +89,7 @@ export async function renderIconPage(env: Env, origin: string, set: string, name
 <title>${esc(entry.title)} icon — ${esc(info?.label || entry.set)} · IconServe</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${pageUrl}">
+<link rel="alternate" type="text/markdown" href="${pageUrl}.md">
 <meta property="og:title" content="${esc(entry.title)} icon (${esc(info?.label || entry.set)})">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${pngUrl}">
@@ -187,6 +190,7 @@ export function renderAgentsPage(origin: string): Response {
 <title>Icons for AI Agents — free SVG icon API, MCP server &amp; llms.txt · IconServe</title>
 <meta name="description" content="A free SVG icon API for AI agents — no API key. 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) with an MCP icon server, llms.txt, and natural-language search. Works with ChatGPT, Claude, Gemini and Grok.">
 <link rel="canonical" href="${origin}/for-ai-agents">
+<link rel="alternate" type="text/markdown" href="${origin}/for-ai-agents.md">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="Icons for AI Agents — free SVG icon API, MCP server &amp; llms.txt">
 <meta property="og:description" content="Free, agent-readable SVG/PNG icons. No API key. MCP server, llms.txt, semantic search. 10,000+ open-source icons.">
@@ -251,6 +255,90 @@ ${faqHtml}
       "access-control-allow-origin": "*",
     },
   });
+}
+
+// Markdown mirror of a per-icon page (Vercel Agent Readability: markdown mirrors).
+export async function renderIconMarkdown(env: Env, origin: string, set: string, name: string): Promise<Response | null> {
+  const catalog = await getCatalog(env);
+  const entry = catalog.byId.get(`${set}/${name}`);
+  if (!entry) return null;
+  const info = SET_INFO[entry.set];
+  const url = svgUrl(origin, entry);
+  const pageUrl = `${origin}/icon/${entry.set}/${entry.name}`;
+  const md = `---
+title: ${entry.title} icon (${info?.label || entry.set})
+description: Free ${entry.title} icon from ${info?.label || entry.set}, licensed ${entry.license}. SVG or PNG, no API key.
+canonical: ${pageUrl}
+---
+
+# ${entry.title} icon
+
+- **Name:** \`${entry.name}\`
+- **Set:** ${info?.label || entry.set}
+- **License:** ${entry.license}
+- **Styles:** ${entry.styles.join(", ")}
+- **Tags:** ${entry.tags.join(", ")}
+
+## Direct URL
+
+${url}
+
+## Use it
+
+\`\`\`html
+<img src="${url}" alt="${entry.title}" width="24" height="24">
+\`\`\`
+
+- Recolor / resize: ${url}?color=%234f46e5&size=48
+- PNG: ${url}?format=png&size=128
+
+## JSON metadata
+
+${origin}/api/icon?name=${entry.name}&set=${entry.set}
+`;
+  return markdown(md, discoveryLinkHeader(origin, [`<${pageUrl}>; rel="canonical"`]));
+}
+
+// Markdown mirror of the /for-ai-agents pillar page.
+export function renderAgentsMarkdown(origin: string): Response {
+  const pageUrl = `${origin}/for-ai-agents`;
+  const md = `---
+title: Icons for AI agents — free SVG icon API, MCP server & llms.txt
+description: Free SVG icon API for AI agents. No API key. MCP icon server, llms.txt, semantic search. 10,000+ open-source icons.
+canonical: ${pageUrl}
+---
+
+# Icons for AI agents
+
+IconServe is a free, open-source SVG icon API built to be read by AI agents as easily as by people. 10,000+ icons at predictable URLs — no API key, an MCP icon server, and an llms.txt so models like ChatGPT, Claude, Gemini and Grok can use it directly.
+
+## Three ways an AI agent can get an icon
+
+### 1. Predictable URL (no API key)
+
+    ${origin}/i/home.svg
+    ${origin}/i/heart.svg?color=%23e11d48&size=48
+    ${origin}/i/bell.svg?format=png&size=128
+
+### 2. JSON API with natural-language search
+
+    GET ${origin}/api/search?q=notification%20bell&limit=3
+
+### 3. MCP icon server
+
+Remote Model Context Protocol server over streamable HTTP, exposing search_icons, get_icon, and list_sets:
+
+    claude mcp add --transport http iconserve ${origin}/mcp
+
+## Why it's built for agents
+
+- No API key, no sign-up.
+- Predictable, guessable URLs (\`/i/{name}.svg\`).
+- llms.txt + OpenAPI: the whole API in one machine-readable file.
+- Semantic search: find icons by meaning, not exact keywords.
+- Open-source & free: Lucide, Heroicons, Tabler, Simple Icons.
+`;
+  return markdown(md, discoveryLinkHeader(origin, [`<${pageUrl}>; rel="canonical"`]));
 }
 
 // Convenience: /icon/{name} (no set) redirects to the best-match canonical page.

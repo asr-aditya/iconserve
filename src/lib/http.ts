@@ -18,6 +18,12 @@ export function text(body: string, status = 200, contentType = "text/plain; char
   return new Response(body, { status, headers: { "content-type": contentType, ...CORS } });
 }
 
+export function markdown(body: string, linkHeader?: string): Response {
+  const headers: Record<string, string> = { "content-type": "text/markdown; charset=utf-8", ...CORS };
+  if (linkHeader) headers["link"] = linkHeader;
+  return new Response(body, { headers });
+}
+
 export function svgResponse(body: string): Response {
   return new Response(body, {
     headers: { "content-type": "image/svg+xml; charset=utf-8", "cache-control": IMMUTABLE, ...CORS },

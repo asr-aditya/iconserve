@@ -21,14 +21,15 @@ export function apiCatalog(origin: string) {
 
 // MCP Server Card (SEP-1649 / SEP-2127) — advertises the MCP endpoint at a well-known path.
 export function mcpServerCard(origin: string) {
+  const name = "iconserve";
+  const version = "0.1.0";
+  const description = "Search and fetch 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG.";
   return {
     $schema: "https://modelcontextprotocol.io/schemas/draft/server-card.json",
-    serverInfo: {
-      name: "iconserve",
-      version: "0.1.0",
-      description: "Search and fetch 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG.",
-      websiteUrl: origin,
-    },
+    name,
+    version,
+    description,
+    serverInfo: { name, version, description, websiteUrl: origin },
     transport: { type: "streamable-http", endpoint: `${origin}/mcp` },
     capabilities: { tools: {} },
     tools: [
@@ -122,9 +123,62 @@ export async function agentSkillsIndex(origin: string) {
   return { $schema: "https://schemas.agentskills.io/discovery/0.2.0/schema.json", skills: entries };
 }
 
+// Reusable RFC 8288 Link header advertising agent-discovery resources.
+export function discoveryLinkHeader(origin: string, extra: string[] = []): string {
+  return [
+    `<${origin}/.well-known/api-catalog>; rel="api-catalog"`,
+    `<${origin}/openapi.json>; rel="service-desc"`,
+    `<${origin}/llms.txt>; rel="service-doc"`,
+    `<${origin}/mcp>; rel="related"; title="MCP server"`,
+    ...extra,
+  ].join(", ");
+}
+
+// AGENTS.md — root skill file describing the site for coding/browsing agents.
+export function agentsMd(origin: string): string {
+  return `# IconServe
+
+Free open-source icons for humans and AI agents. 10,000+ icons (Lucide, Heroicons, Tabler, Simple Icons) served as SVG or PNG at predictable URLs. No API key, CORS open.
+
+## Overview
+
+IconServe aggregates permissively-licensed icon sets into one agent-readable catalog. Every icon has a predictable URL and a crawlable HTML page; the whole API is described in ${origin}/llms.txt.
+
+## Setup
+
+No installation, key, or account. Call the HTTPS endpoints directly.
+
+## Usage
+
+- Get an icon: \`${origin}/i/{name}.svg\` (best match) or \`${origin}/icons/{set}/{name}.svg\` (pinned set).
+- Transform via query params: \`color\` (URL-encoded hex), \`size\` (px), \`stroke\`, \`style\`, \`format=png\`.
+- Search: \`${origin}/api/search?q={query}\` — keyword + semantic search returning names and SVG URLs.
+- MCP server (streamable-http): \`${origin}/mcp\` — tools: search_icons, get_icon, list_sets.
+
+## Conventions
+
+- Sets: \`lucide\`, \`heroicons\`, \`tabler\`, \`simple-icons\`.
+- Each icon keeps its original license (ISC, MIT, MIT, CC0 respectively).
+- Every HTML page has a \`.md\` markdown mirror at the same URL.
+
+## Discovery
+
+- llms.txt: ${origin}/llms.txt (and ${origin}/llms-full.txt)
+- OpenAPI: ${origin}/openapi.json
+- API catalog: ${origin}/.well-known/api-catalog
+- MCP server card: ${origin}/.well-known/mcp/server-card.json
+- Agent skills: ${origin}/.well-known/agent-skills/index.json
+`;
+}
+
 // Markdown representation of the homepage, served on `Accept: text/markdown`.
 export function homepageMarkdown(origin: string): string {
-  return `# IconServe
+  return `---
+title: IconServe — open-source icons for humans & AI agents
+description: Free SVG/PNG icon API with no API key. 10,000+ open-source icons, MCP server, llms.txt, semantic search.
+---
+
+# IconServe
 
 Free open-source icons for humans and AI agents — 10,000+ icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG at predictable URLs. No API key.
 

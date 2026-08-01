@@ -58,6 +58,43 @@ export async function sitemapXml(env: Env, origin: string): Promise<string> {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
 }
 
+// Markdown sitemap (Vercel Agent Readability: sitemap.md with headings + links).
+// Lists the key pages plus a sample of icon pages (the full set lives in sitemap.xml).
+export async function sitemapMd(env: Env, origin: string): Promise<string> {
+  const catalog = await getCatalog(env);
+  const counts: Record<string, number> = {};
+  for (const e of catalog.entries) counts[e.set] = (counts[e.set] || 0) + 1;
+
+  const sample = catalog.entries.slice(0, 100);
+  const sampleLinks = sample.map((e) => `- [${e.title} (${e.set})](${origin}/icon/${e.set}/${e.name})`).join("\n");
+  const setLines = Object.entries(counts)
+    .map(([set, n]) => `- [${set} — ${n} icons](${origin}/?set=${set})`)
+    .join("\n");
+
+  return `# IconServe sitemap
+
+Free open-source icons for humans and AI agents.
+
+## Key pages
+
+- [Home](${origin}/)
+- [Icons for AI agents](${origin}/for-ai-agents)
+- [llms.txt](${origin}/llms.txt)
+- [llms-full.txt](${origin}/llms-full.txt)
+- [OpenAPI](${origin}/openapi.json)
+
+## Icon sets
+
+${setLines}
+
+## Sample icon pages
+
+The complete list of ${catalog.entries.length.toLocaleString()} icon pages is in [sitemap.xml](${origin}/sitemap.xml).
+
+${sampleLinks}
+`;
+}
+
 // A fuller, self-contained doc some agents fetch as "llms-full.txt": the standard llms.txt
 // plus the complete set inventory and a compact worked example.
 export async function llmsFullTxt(env: Env, origin: string): Promise<string> {
