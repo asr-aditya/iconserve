@@ -39,6 +39,89 @@ export function mcpServerCard(origin: string) {
   };
 }
 
+// ---- Agent Skills Discovery (agentskills.io RFC v0.2.0) ----
+
+type Skill = { name: string; description: string; md: string };
+
+export function agentSkills(origin: string): Skill[] {
+  return [
+    {
+      name: "find-and-embed-icons",
+      description: "Find an open-source icon by keyword or natural language and embed it as SVG or PNG using IconServe.",
+      md: `---
+name: find-and-embed-icons
+description: Find an open-source icon and embed it as SVG or PNG using IconServe.
+---
+
+# Find and embed icons with IconServe
+
+IconServe serves 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG at predictable URLs. No API key.
+
+## Steps
+1. If you don't know the exact name, search first:
+   GET ${origin}/api/search?q=notification%20bell&limit=3
+   Use results[0].name.
+2. Embed the icon by URL:
+   ${origin}/i/{name}.svg
+3. Optional transforms (query params): color (URL-encoded hex), size (px), stroke, style, format=png.
+   Example: ${origin}/i/bell.svg?color=%234f46e5&size=24
+
+## Notes
+- CORS is open; call directly from a browser or agent.
+- Pin a set: ${origin}/icons/{set}/{name}.svg (sets: lucide, heroicons, tabler, simple-icons).
+- Each icon keeps its original open-source license.
+`,
+    },
+    {
+      name: "use-iconserve-mcp",
+      description: "Connect to the IconServe MCP server to search and fetch icons as native tool calls.",
+      md: `---
+name: use-iconserve-mcp
+description: Connect to the IconServe MCP server to search and fetch icons as native tool calls.
+---
+
+# Use the IconServe MCP server
+
+IconServe exposes a remote Model Context Protocol server over streamable HTTP.
+
+## Endpoint
+${origin}/mcp
+
+## Add to Claude Code
+claude mcp add --transport http iconserve ${origin}/mcp
+
+## Tools
+- search_icons(query, limit?, set?) — search by keyword or natural language.
+- get_icon(name, set?, style?, color?, size?, stroke?, format?) — get SVG markup + hosted URL.
+- list_sets() — list icon sets with counts and licenses.
+`,
+    },
+  ];
+}
+
+export function findSkill(origin: string, name: string): Skill | undefined {
+  return agentSkills(origin).find((s) => s.name === name);
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export async function agentSkillsIndex(origin: string) {
+  const skills = agentSkills(origin);
+  const entries = await Promise.all(
+    skills.map(async (s) => ({
+      name: s.name,
+      type: "skill-md" as const,
+      description: s.description,
+      url: `${origin}/.well-known/agent-skills/${s.name}/SKILL.md`,
+      digest: `sha256:${await sha256Hex(s.md)}`,
+    })),
+  );
+  return { $schema: "https://schemas.agentskills.io/discovery/0.2.0/schema.json", skills: entries };
+}
+
 // Markdown representation of the homepage, served on `Accept: text/markdown`.
 export function homepageMarkdown(origin: string): string {
   return `# IconServe

@@ -8,7 +8,7 @@ import { llmsTxt, openApi } from "./lib/docs";
 import { handleMcp } from "./lib/mcp";
 import { robotsTxt, sitemapXml, llmsFullTxt } from "./lib/seo";
 import { renderIconPage, bestIconPageRedirect, renderAgentsPage } from "./lib/pages";
-import { apiCatalog, mcpServerCard, homepageMarkdown } from "./lib/wellknown";
+import { apiCatalog, mcpServerCard, homepageMarkdown, agentSkillsIndex, findSkill } from "./lib/wellknown";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 
@@ -62,6 +62,12 @@ export default {
       if (path === "/.well-known/api-catalog")
         return json(apiCatalog(origin), 200, { "content-type": "application/linkset+json; charset=utf-8" });
       if (path === "/.well-known/mcp/server-card.json") return json(mcpServerCard(origin));
+      if (path === "/.well-known/agent-skills/index.json") return json(await agentSkillsIndex(origin));
+      if (path.startsWith("/.well-known/agent-skills/") && path.endsWith("/SKILL.md")) {
+        const name = path.slice("/.well-known/agent-skills/".length, -"/SKILL.md".length);
+        const skill = findSkill(origin, name);
+        return skill ? text(skill.md, 200, "text/markdown; charset=utf-8") : notFound(`skill not found: ${name}`);
+      }
 
       // IndexNow ownership key file — served at /{key}.txt for Bing/Yandex verification.
       if (env.INDEXNOW_KEY && path === `/${env.INDEXNOW_KEY}.txt`)
