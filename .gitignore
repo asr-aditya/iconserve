@@ -1,0 +1,16 @@
+node_modules/
+.wrangler/
+.dev.vars
+
+# Generated icon artifacts — reproducible via `npm run build:data` (do not commit; ~28MB)
+data/
+
+# Local rendered snapshots of llms.txt / robots.txt etc.
+generated/
+
+dist/
+*.log
+.DS_Store
+
+# Cloudflare tooling boilerplate (not part of this project)
+cloudflare-skills.md

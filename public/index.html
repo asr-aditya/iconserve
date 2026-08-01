@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IconServe — open-source icons for humans & AI agents</title>
+<meta name="description" content="A free service that serves 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG at predictable, agent-readable URLs." />
+<link rel="canonical" href="https://iconserve.icons-for-agents.workers.dev/" />
+<meta name="robots" content="index, follow" />
+<meta property="og:title" content="IconServe — open-source icons for humans & AI agents" />
+<meta property="og:description" content="10,000+ open-source icons as SVG or PNG at predictable, agent-readable URLs. Search, recolor, resize. No API key." />
+<meta property="og:type" content="website" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "IconServe",
+  "url": "https://iconserve.icons-for-agents.workers.dev/",
+  "description": "Free open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG at predictable, agent-readable URLs.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": { "@type": "EntryPoint", "urlTemplate": "https://iconserve.icons-for-agents.workers.dev/api/search?q={search_term_string}" },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebAPI",
+  "name": "IconServe API",
+  "description": "Search and fetch 10,000+ open-source icons as SVG or PNG. Keyword + semantic search, MCP server, no API key.",
+  "documentation": "https://iconserve.icons-for-agents.workers.dev/llms.txt",
+  "termsOfService": "https://iconserve.icons-for-agents.workers.dev/llms.txt",
+  "provider": { "@type": "Organization", "name": "IconServe" },
+  "isAccessibleForFree": true
+}
+</script>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111418; --muted: #5b6572; --line: #e6e8eb;
+    --card: #f7f8fa; --accent: #4f46e5; --code-bg: #f2f3f5; --pill: #eef0f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9aa4b2; --line:#232a33;
+      --card:#161b22; --accent:#8b8bff; --code-bg:#161b22; --pill:#1c232c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--fg); -webkit-font-smoothing:antialiased; }
+  .wrap { max-width: 860px; margin:0 auto; padding: 40px 20px 80px; }
+  header h1 { font-size: 2rem; margin:0 0 6px; letter-spacing:-.02em; }
+  header p.tag { color:var(--muted); margin:0 0 4px; font-size:1.05rem; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 28px; }
+  .badge { font-size:.8rem; background:var(--pill); color:var(--muted); padding:4px 10px; border-radius:999px; }
+  .search { display:flex; gap:8px; margin: 8px 0 6px; }
+  .search input { flex:1; padding:13px 15px; font-size:1rem; border:1px solid var(--line);
+    border-radius:10px; background:var(--card); color:var(--fg); }
+  .search input:focus { outline:2px solid var(--accent); border-color:transparent; }
+  .hint { color:var(--muted); font-size:.85rem; margin:0 0 16px; }
+  #results { display:grid; grid-template-columns: repeat(auto-fill,minmax(96px,1fr)); gap:10px; margin: 14px 0 8px; }
+  .icon { border:1px solid var(--line); border-radius:10px; background:var(--card); padding:12px 6px 8px;
+    text-align:center; cursor:pointer; transition:border-color .15s; }
+  .icon:hover { border-color:var(--accent); }
+  .icon svg { width:28px; height:28px; color:var(--fg); }
+  .icon .nm { font-size:.68rem; color:var(--muted); margin-top:6px; word-break:break-word; line-height:1.2; }
+  .icon .st { font-size:.6rem; color:var(--muted); opacity:.7; }
+  h2 { font-size:1.15rem; margin:38px 0 10px; letter-spacing:-.01em; }
+  p { color:var(--fg); }
+  code { background:var(--code-bg); padding:2px 6px; border-radius:6px; font-size:.88em;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  pre { background:var(--code-bg); border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    overflow-x:auto; font-size:.85rem; line-height:1.5; }
+  pre code { background:none; padding:0; }
+  table { border-collapse:collapse; width:100%; font-size:.9rem; }
+  td,th { border-bottom:1px solid var(--line); text-align:left; padding:8px 10px; vertical-align:top; }
+  .ex { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:10px 0; }
+  .ex img { width:40px; height:40px; }
+  footer { margin-top:50px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.85rem; }
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--fg); color:var(--bg);
+    padding:10px 16px; border-radius:8px; font-size:.85rem; opacity:0; transition:opacity .2s; pointer-events:none; }
+  .toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>IconServe</h1>
+    <p class="tag">Open-source icons at predictable URLs — built to be read by humans <em>and</em> AI agents.</p>
+    <div class="badges" id="badges">
+      <span class="badge">10,000+ icons</span>
+      <span class="badge">Lucide · Heroicons · Tabler · Simple Icons</span>
+      <span class="badge">SVG + PNG</span>
+      <span class="badge">No API key</span>
+      <span class="badge">Free</span>
+    </div>
+  </header>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="Search 10,000+ icons — try “shopping cart”, “notification bell”, “github”…" autofocus />
+  </div>
+  <p class="hint">Click any result to copy its URL. Powered by the same <code>/api/search</code> endpoint agents use.</p>
+  <div id="results"></div>
+
+  <h2>Embed an icon (fastest path)</h2>
+  <p>Drop this URL into an <code>&lt;img&gt;</code>, a markdown image, or fetch it. No signup.</p>
+  <div class="ex">
+    <img src="/i/home.svg" alt="home" />
+    <img src="/i/shopping-cart.svg?color=%23e11d48" alt="cart" />
+    <img src="/i/heart.svg?color=crimson&stroke=1.5" alt="heart" />
+    <img src="/i/github.svg" alt="github" />
+    <img src="/i/bell.svg?color=%234f46e5" alt="bell" />
+  </div>
+<pre><code>&lt;img src="https://YOUR_HOST/i/home.svg" /&gt;
+https://YOUR_HOST/i/shopping-cart.svg?color=%23e11d48&amp;size=48
+https://YOUR_HOST/icons/lucide/house.svg?stroke=1.5
+https://YOUR_HOST/i/github.svg?format=png&amp;size=128</code></pre>
+
+  <h2>Query parameters</h2>
+  <table>
+    <tr><th>param</th><th>values</th><th>example</th></tr>
+    <tr><td><code>color</code></td><td>hex, CSS color, or <code>currentColor</code></td><td><code>color=%23ff0000</code></td></tr>
+    <tr><td><code>size</code></td><td>1–2048 (px)</td><td><code>size=64</code></td></tr>
+    <tr><td><code>stroke</code></td><td>0–20 (line icons)</td><td><code>stroke=1.5</code></td></tr>
+    <tr><td><code>style</code></td><td>e.g. <code>solid</code>, <code>filled</code></td><td><code>style=solid</code></td></tr>
+    <tr><td><code>format</code></td><td><code>svg</code> or <code>png</code></td><td><code>format=png&amp;size=128</code></td></tr>
+  </table>
+
+  <h2>For AI agents</h2>
+  <p>Machine-readable docs live at <a href="/llms.txt"><code>/llms.txt</code></a>. Three ways in:</p>
+  <ul>
+    <li><strong>Guessable URLs</strong> — <code>/i/{name}.svg</code> (best match) or <code>/icons/{set}/{name}.svg</code>.</li>
+    <li><strong>JSON API</strong> — <a href="/api/search?q=home&limit=5"><code>/api/search?q=…</code></a>, <code>/api/icon</code>, <a href="/api/sets"><code>/api/sets</code></a>. OpenAPI at <a href="/openapi.json"><code>/openapi.json</code></a>.</li>
+    <li><strong>MCP server</strong> — connect an MCP client to <code>/mcp</code>. Tools: <code>search_icons</code>, <code>get_icon</code>, <code>list_sets</code>.</li>
+  </ul>
+
+  <h2>Licensing</h2>
+  <p>Icons are redistributed under their original permissive licenses — Lucide (ISC), Heroicons (MIT),
+     Tabler (MIT), Simple Icons (CC0). Brand marks from Simple Icons are trademarks of their respective
+     owners; use them per each brand's guidelines.</p>
+
+  <footer>
+    IconServe · aggregates open-source icon sets · <a href="/llms.txt">llms.txt</a> · <a href="/openapi.json">openapi.json</a>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const results = $("#results"), input = $("#q"), toast = $("#toast");
+const host = location.origin;
+
+function showToast(msg) {
+  toast.textContent = msg; toast.classList.add("show");
+  clearTimeout(showToast._t); showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+async function run(q) {
+  if (!q.trim()) { results.innerHTML = ""; return; }
+  try {
+    const r = await fetch(`${host}/api/search?q=${encodeURIComponent(q)}&limit=48`);
+    const data = await r.json();
+    results.innerHTML = "";
+    for (const it of data.results || []) {
+      const cell = document.createElement("div");
+      cell.className = "icon";
+      const url = `${host}/icons/${it.set}/${it.name}.svg`;
+      cell.innerHTML = `<div class="ico"></div><div class="nm">${it.name}</div><div class="st">${it.set}</div>`;
+      const img = document.createElement("img");
+      img.src = url; img.width = 28; img.height = 28; img.alt = it.name; img.loading = "lazy";
+      cell.querySelector(".ico").appendChild(img);
+      cell.title = url + "  (click to copy)";
+      cell.onclick = () => { navigator.clipboard.writeText(url); showToast("Copied " + url); };
+      results.appendChild(cell);
+    }
+    if (!(data.results || []).length) results.innerHTML = `<p class="hint">No matches for “${q}”.</p>`;
+  } catch (e) { results.innerHTML = `<p class="hint">Search unavailable.</p>`; }
+}
+
+let t;
+input.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => run(input.value), 180); });
+run("home");
+</script>
+</body>
+</html>

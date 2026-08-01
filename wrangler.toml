@@ -1,0 +1,24 @@
+name = "iconserve"
+main = "src/index.ts"
+compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static landing page + assets served from ./public
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# R2 bucket holds icon SVGs + embeddings.bin + catalog.json
+[[r2_buckets]]
+binding = "ICONS"
+bucket_name = "iconserve-icons"
+
+# Workers AI: embeds the query string at search time (bge-small-en-v1.5, 384-dim)
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true
+
+[vars]
+DEFAULT_SET_ORDER = "lucide,heroicons,tabler,simple-icons"
