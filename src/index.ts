@@ -8,6 +8,7 @@ import { llmsTxt, openApi } from "./lib/docs";
 import { handleMcp } from "./lib/mcp";
 import { robotsTxt, sitemapXml, llmsFullTxt } from "./lib/seo";
 import { renderIconPage, bestIconPageRedirect, renderAgentsPage } from "./lib/pages";
+import { apiCatalog, mcpServerCard, homepageMarkdown } from "./lib/wellknown";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 
@@ -56,6 +57,11 @@ export default {
       if (path === "/llms-full.txt") return text(await llmsFullTxt(env, origin));
       if (path === "/openapi.json") return json(openApi(origin));
       if (path === "/robots.txt") return text(robotsTxt(origin));
+
+      // ---- Well-known agent-discovery endpoints ----
+      if (path === "/.well-known/api-catalog")
+        return json(apiCatalog(origin), 200, { "content-type": "application/linkset+json; charset=utf-8" });
+      if (path === "/.well-known/mcp/server-card.json") return json(mcpServerCard(origin));
 
       // IndexNow ownership key file — served at /{key}.txt for Bing/Yandex verification.
       if (env.INDEXNOW_KEY && path === `/${env.INDEXNOW_KEY}.txt`)
@@ -164,7 +170,26 @@ export default {
         });
       }
 
-      // ---- Landing page + static assets ----
+      // ---- Landing page: markdown negotiation + agent-discovery Link headers ----
+      if (path === "/" || path === "/index.html") {
+        const accept = request.headers.get("accept") || "";
+        if (accept.includes("text/markdown"))
+          return text(homepageMarkdown(origin), 200, "text/markdown; charset=utf-8");
+        const res = await env.ASSETS.fetch(request);
+        const headers = new Headers(res.headers);
+        headers.set(
+          "link",
+          [
+            `<${origin}/.well-known/api-catalog>; rel="api-catalog"`,
+            `<${origin}/openapi.json>; rel="service-desc"`,
+            `<${origin}/llms.txt>; rel="service-doc"`,
+            `<${origin}/mcp>; rel="related"; title="MCP server"`,
+          ].join(", "),
+        );
+        return new Response(res.body, { status: res.status, headers });
+      }
+
+      // ---- Static assets ----
       return env.ASSETS.fetch(request);
     } catch (err: any) {
       return json({ error: "internal_error", detail: String(err?.message || err) }, 500);

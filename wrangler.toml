@@ -7,6 +7,9 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# Run the Worker before serving the homepage asset so it can add agent-discovery Link
+# headers and honor `Accept: text/markdown`. Other assets keep the fast direct-serve path.
+run_worker_first = true
 
 # R2 bucket holds icon SVGs + embeddings.bin + catalog.json
 [[r2_buckets]]

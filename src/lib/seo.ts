@@ -37,6 +37,8 @@ ${blocks}
 
 User-agent: *
 Allow: /
+# Content usage preferences (contentsignals.org) — we welcome training, search, and agent input.
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 
 Sitemap: ${origin}/sitemap.xml
 `;
