@@ -46,7 +46,10 @@ Sitemap: ${origin}/sitemap.xml
 export async function sitemapXml(env: Env, origin: string): Promise<string> {
   const catalog = await getCatalog(env);
   const today = new Date().toISOString().slice(0, 10);
-  const urls: string[] = [`  <url><loc>${origin}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`];
+  const urls: string[] = [
+    `  <url><loc>${origin}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
+    `  <url><loc>${origin}/for-ai-agents</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>`,
+  ];
   for (const e of catalog.entries) {
     urls.push(`  <url><loc>${origin}/icon/${e.set}/${e.name}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`);
   }

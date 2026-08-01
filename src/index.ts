@@ -7,7 +7,7 @@ import { svgUrl } from "./lib/urls";
 import { llmsTxt, openApi } from "./lib/docs";
 import { handleMcp } from "./lib/mcp";
 import { robotsTxt, sitemapXml, llmsFullTxt } from "./lib/seo";
-import { renderIconPage, bestIconPageRedirect } from "./lib/pages";
+import { renderIconPage, bestIconPageRedirect, renderAgentsPage } from "./lib/pages";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 
@@ -64,6 +64,9 @@ export default {
         return new Response(await sitemapXml(env, origin), {
           headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" },
         });
+
+      // ---- SEO pillar page ----
+      if (path === "/for-ai-agents") return renderAgentsPage(origin);
 
       // ---- Per-icon HTML pages (crawlable, structured data) ----
       if (path.startsWith("/icon/")) {

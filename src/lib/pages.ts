@@ -137,6 +137,122 @@ ${relatedHtml}
   });
 }
 
+// SEO pillar page targeting the "icons for AI agents / icon API / MCP icon server" keyword cluster.
+export function renderAgentsPage(origin: string): Response {
+  const mcpUrl = `${origin}/mcp`;
+  const faqs: [string, string][] = [
+    [
+      "Is there an icon API with no API key?",
+      "Yes. IconServe is a free SVG icon API with no API key, no sign-up, and no rate-limit registration. Request any icon at a predictable URL such as " +
+        `${origin}/i/home.svg and get back raw SVG (or PNG with ?format=png). CORS is open, so you can call it directly from a browser, a Worker, or an AI agent.`,
+    ],
+    [
+      "How do I add IconServe as an MCP icon server to Claude or ChatGPT?",
+      "IconServe runs a remote Model Context Protocol (MCP) server at " +
+        mcpUrl +
+        " over streamable HTTP. In Claude Code, run: claude mcp add --transport http iconserve " +
+        mcpUrl +
+        " . Any MCP-compatible client (Claude, Cursor, and others) can connect and call the search_icons, get_icon, and list_sets tools.",
+    ],
+    [
+      "What is llms.txt and does IconServe have one?",
+      "llms.txt is a plain-text file that describes a site's API in a way large language models can read in one request. IconServe serves the full API at " +
+        `${origin}/llms.txt (and an expanded ${origin}/llms-full.txt), so an AI agent can learn every endpoint, parameter, and example without scraping HTML.`,
+    ],
+    [
+      "Can AI agents search icons by natural language?",
+      "Yes. The search endpoint combines keyword matching with semantic (embedding) search, so an agent can ask for vague concepts like “something to buy stuff with” and get shopping-cart icons back. Try " +
+        `${origin}/api/search?q=notification+bell.`,
+    ],
+    [
+      "Which open-source icon sets are included?",
+      "IconServe aggregates 10,000+ icons from Lucide (ISC), Heroicons (MIT), Tabler (MIT), and Simple Icons (CC0) into one agent-readable catalog, each served at a predictable URL with its original license preserved.",
+    ],
+  ];
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(([q, a]) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
+  const faqHtml = faqs.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join("\n");
+
+  const html = `<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Icons for AI Agents — free SVG icon API, MCP server &amp; llms.txt · IconServe</title>
+<meta name="description" content="A free SVG icon API for AI agents — no API key. 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) with an MCP icon server, llms.txt, and natural-language search. Works with ChatGPT, Claude, Gemini and Grok.">
+<link rel="canonical" href="${origin}/for-ai-agents">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Icons for AI Agents — free SVG icon API, MCP server &amp; llms.txt">
+<meta property="og:description" content="Free, agent-readable SVG/PNG icons. No API key. MCP server, llms.txt, semantic search. 10,000+ open-source icons.">
+<meta property="og:type" content="article">
+<script type="application/ld+json">${JSON.stringify(faqJsonLd)}</script>
+<style>${PAGE_CSS}
+.lede{font-size:1.05rem;color:var(--muted)}.cta{display:inline-block;margin:14px 8px 0 0;padding:9px 16px;border-radius:9px;background:var(--accent);color:#fff;font-size:.9rem}.cta.alt{background:transparent;color:var(--accent);border:1px solid var(--line)}
+h3{font-size:.98rem;margin:20px 0 4px}
+</style></head><body><div class="wrap">
+<nav><a href="${origin}/">IconServe</a> / Icons for AI agents</nav>
+
+<h1>Icons for AI agents</h1>
+<p class="lede">IconServe is a free, open-source <strong>SVG icon API</strong> built to be read by AI agents as easily as by people. 10,000+ icons at predictable URLs &mdash; <strong>no API key</strong>, an <strong>MCP icon server</strong>, and an <strong>llms.txt</strong> so models like ChatGPT, Claude, Gemini and Grok can use it directly.</p>
+<p>
+  <a class="cta" href="${origin}/">Search 10,000+ icons</a>
+  <a class="cta alt" href="${origin}/llms.txt">Read the llms.txt</a>
+</p>
+
+<h2>Three ways an AI agent can get an icon</h2>
+<p>Every method returns the same catalog of agent-readable icons &mdash; pick whichever fits your stack.</p>
+
+<h3>1. Predictable URL (no API key)</h3>
+<p>Fetch any icon as SVG or PNG. Recolor and resize with query parameters:</p>
+<pre><code>${esc(origin)}/i/home.svg
+${esc(origin)}/i/heart.svg?color=%23e11d48&amp;size=48
+${esc(origin)}/i/bell.svg?format=png&amp;size=128</code></pre>
+
+<h3>2. JSON API with natural-language search</h3>
+<p>Semantic + keyword search returns names and ready-to-use SVG URLs:</p>
+<pre><code>GET ${esc(origin)}/api/search?q=notification%20bell&amp;limit=3</code></pre>
+
+<h3>3. MCP icon server</h3>
+<p>A remote <strong>Model Context Protocol</strong> server over streamable HTTP, exposing <code>search_icons</code>, <code>get_icon</code>, and <code>list_sets</code>:</p>
+<pre><code># Claude Code
+claude mcp add --transport http iconserve ${esc(mcpUrl)}</code></pre>
+
+<h2>Why it's built for agents, not just humans</h2>
+<ul>
+<li><strong>No API key, no sign-up</strong> &mdash; agents can call it the moment they discover it.</li>
+<li><strong>Predictable, guessable URLs</strong> &mdash; <code>/i/{name}.svg</code> needs no lookup.</li>
+<li><strong>llms.txt + OpenAPI</strong> &mdash; the whole API in one machine-readable file.</li>
+<li><strong>Semantic search</strong> &mdash; find icons by meaning, not exact keywords.</li>
+<li><strong>Open-source &amp; free</strong> &mdash; 10,000+ icons from Lucide, Heroicons, Tabler and Simple Icons.</li>
+</ul>
+
+<h2>Frequently asked questions</h2>
+${faqHtml}
+
+<footer>
+  <a href="${origin}/">Home</a> &middot;
+  <a href="${origin}/llms.txt">llms.txt</a> &middot;
+  <a href="${origin}/openapi.json">OpenAPI</a> &middot;
+  <a href="https://github.com/asr-aditya/iconserve">GitHub</a>
+  <br>Free open-source icons for AI agents and websites.
+</footer>
+</div></body></html>`;
+
+  return new Response(html, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=3600",
+      "access-control-allow-origin": "*",
+    },
+  });
+}
+
 // Convenience: /icon/{name} (no set) redirects to the best-match canonical page.
 export async function bestIconPageRedirect(env: Env, origin: string, name: string): Promise<Response | null> {
   const catalog = await getCatalog(env);
