@@ -3,8 +3,11 @@ import type { Env } from "../types";
 // Classify a request's User-Agent into a coarse kind + a named family, so we can
 // measure agent vs human traffic and which agents/crawlers actually reach us.
 const AGENT_UAS: [RegExp, string][] = [
+  [/claude-code/i, "claude-code"], // MCP client (Claude Code / Desktop) — often your own dev connection
+  [/cursor/i, "cursor"],
+  [/cline|roo-?code|continue\.dev|windsurf/i, "ide-agent"],
   [/gptbot|oai-searchbot|chatgpt-user/i, "chatgpt"],
-  [/claude(bot|-user|-searchbot)|anthropic/i, "claude"],
+  [/claude|anthropic/i, "claude"],
   [/perplexity/i, "perplexity"],
   [/google-extended|googleother|gemini/i, "google"],
   [/bingbot|bingpreview/i, "bing"],
@@ -17,12 +20,17 @@ const AGENT_UAS: [RegExp, string][] = [
   [/duckassist|duckduckbot/i, "duckduckgo"],
   [/youbot/i, "you"],
 ];
+// Monitoring/uptime and protocol crawlers — infrastructure, not demand. Kept as `bot`.
+const MONITOR_UA = /sentineloracle|uptimerobot|pingdom|betteruptime|statuscake|healthcheck|liveness|datadog|newrelic/i;
+const CRAWLER_UA = /402explorer|paygent|x402|mcp-scan|smithery/i;
 const SCRIPT_UA = /python-requests|python-httpx|aiohttp|node-fetch|undici|axios|go-http-client|okhttp|curl|wget|libwww|java\/|ruby|scrapy|postman|insomnia/i;
 const BROWSER_UA = /mozilla|applewebkit|chrome|safari|firefox|edg\/|gecko/i;
 
 export function classifyUA(ua: string): { kind: string; family: string } {
   if (!ua) return { kind: "unknown", family: "none" };
   for (const [re, family] of AGENT_UAS) if (re.test(ua)) return { kind: "agent", family };
+  if (MONITOR_UA.test(ua)) return { kind: "bot", family: "monitor" };
+  if (CRAWLER_UA.test(ua)) return { kind: "bot", family: "protocol-crawler" };
   if (SCRIPT_UA.test(ua)) return { kind: "agent", family: "script" };
   if (BROWSER_UA.test(ua)) return { kind: "human", family: "browser" };
   return { kind: "bot", family: "unknown" };
