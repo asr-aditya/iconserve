@@ -14,7 +14,7 @@ export const SET_INFO: Record<string, { label: string; homepage: string; license
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
-const PAGE_CSS = `
+export const PAGE_CSS = `
 :root{--bg:#fff;--fg:#111418;--muted:#5b6572;--line:#e6e8eb;--card:#f7f8fa;--accent:#4f46e5;--code:#f2f3f5}
 @media(prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#9aa4b2;--line:#232a33;--card:#161b22;--accent:#8b8bff;--code:#161b22}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
@@ -206,6 +206,7 @@ h3{font-size:.98rem;margin:20px 0 4px}
 <p class="lede">IconServe is a free, open-source <strong>SVG icon API</strong> built to be read by AI agents as easily as by people. 10,000+ icons at predictable URLs &mdash; <strong>no API key</strong>, an <strong>MCP icon server</strong>, and an <strong>llms.txt</strong> so models like ChatGPT, Claude, Gemini and Grok can use it directly.</p>
 <p>
   <a class="cta" href="${origin}/">Search 10,000+ icons</a>
+  <a class="cta alt" href="${origin}/integrations">Add to your AI agent</a>
   <a class="cta alt" href="${origin}/llms.txt">Read the llms.txt</a>
 </p>
 

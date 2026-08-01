@@ -44,6 +44,7 @@ export function routeType(path: string): string {
   if (path.startsWith("/api/search")) return "search";
   if (path.startsWith("/api/")) return "api";
   if (path === "/for-ai-agents" || path === "/for-ai-agents.md") return "pillar";
+  if (path.startsWith("/integrations")) return "integrations";
   if (path === "/llms.txt" || path === "/llms-full.txt") return "llms";
   if (path.startsWith("/.well-known")) return "wellknown";
   if (path === "/AGENTS.md") return "agents-md";

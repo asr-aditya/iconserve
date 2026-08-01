@@ -10,6 +10,7 @@ import { robotsTxt, sitemapXml, sitemapMd, llmsFullTxt } from "./lib/seo";
 import { renderIconPage, renderIconMarkdown, bestIconPageRedirect, renderAgentsPage, renderAgentsMarkdown } from "./lib/pages";
 import { apiCatalog, mcpServerCard, homepageMarkdown, agentSkillsIndex, findSkill, agentsMd, discoveryLinkHeader } from "./lib/wellknown";
 import { logRequest } from "./lib/analytics";
+import { renderIntegrationsIndex, renderIntegrationPage, CLIENTS } from "./lib/integrations";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 
@@ -79,6 +80,13 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
         return new Response(await sitemapXml(env, origin), {
           headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" },
         });
+
+      // ---- Integration pages (per MCP client) ----
+      if (path === "/integrations" || path === "/integrations/") return renderIntegrationsIndex(origin);
+      if (path.startsWith("/integrations/")) {
+        const slug = path.slice("/integrations/".length).replace(/\/$/, "");
+        return renderIntegrationPage(origin, slug) || notFound(`integration not found: ${slug}`);
+      }
 
       // ---- SEO pillar page (+ markdown mirror) ----
       const acceptsMd = (request.headers.get("accept") || "").includes("text/markdown");
