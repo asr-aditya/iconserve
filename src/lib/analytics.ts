@@ -56,16 +56,17 @@ export function routeType(path: string): string {
 // Fixed blob/double schema (referenced as blob1..blobN / double1 in SQL queries):
 //   blob1 kind, blob2 family, blob3 routeType, blob4 httpMethod, blob5 country,
 //   blob6 hasReferer, blob7 path, blob8 mcpMethod, blob9 toolName,
-//   blob10 rawUserAgent (truncated); double1 status.
+//   blob10 rawUserAgent (truncated), blob11 ref (?ref= campaign tag); double1 status.
 export function logRequest(env: Env, request: Request, url: URL, status: number): void {
   if (!env.ANALYTICS) return;
   try {
     const ua = request.headers.get("user-agent") || "";
     const { kind, family } = classifyUA(ua);
     const country = (request as any).cf?.country || "XX";
+    const ref = (url.searchParams.get("ref") || "").slice(0, 32);
     env.ANALYTICS.writeDataPoint({
       indexes: [kind],
-      blobs: [kind, family, routeType(url.pathname), request.method, country, request.headers.get("referer") ? "1" : "0", url.pathname.slice(0, 96), "", "", ua.slice(0, 160)],
+      blobs: [kind, family, routeType(url.pathname), request.method, country, request.headers.get("referer") ? "1" : "0", url.pathname.slice(0, 96), "", "", ua.slice(0, 160), ref],
       doubles: [status],
     });
   } catch {

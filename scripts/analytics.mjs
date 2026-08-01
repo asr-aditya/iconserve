@@ -93,6 +93,12 @@ async function main() {
     ["user_agent", "hits"],
   );
 
+  console.log("\nCampaign attribution (?ref= — which post drove clicks):");
+  table(
+    await q(`SELECT blob11 AS ref, SUM(_sample_interval) AS hits FROM ${DATASET} WHERE ${WINDOW} AND blob11 != '' GROUP BY ref ORDER BY hits DESC`),
+    ["ref", "hits"],
+  );
+
   console.log("\nTop referers (who links to us):");
   table(
     await q(`SELECT blob1 AS kind, SUM(_sample_interval) AS hits FROM ${DATASET} WHERE ${WINDOW} AND blob6 = '1' GROUP BY kind ORDER BY hits DESC`),
