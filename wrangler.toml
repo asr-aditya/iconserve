@@ -22,3 +22,5 @@ enabled = true
 
 [vars]
 DEFAULT_SET_ORDER = "lucide,heroicons,tabler,simple-icons"
+# IndexNow key — served at /{key}.txt so Bing/Yandex can verify ownership of ping submissions.
+INDEXNOW_KEY = "cd4babd43b576a1f8488464a1aad2375"

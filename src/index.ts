@@ -56,6 +56,10 @@ export default {
       if (path === "/llms-full.txt") return text(await llmsFullTxt(env, origin));
       if (path === "/openapi.json") return json(openApi(origin));
       if (path === "/robots.txt") return text(robotsTxt(origin));
+
+      // IndexNow ownership key file — served at /{key}.txt for Bing/Yandex verification.
+      if (env.INDEXNOW_KEY && path === `/${env.INDEXNOW_KEY}.txt`)
+        return text(env.INDEXNOW_KEY);
       if (path === "/sitemap.xml")
         return new Response(await sitemapXml(env, origin), {
           headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" },

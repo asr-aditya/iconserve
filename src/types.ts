@@ -3,6 +3,7 @@ export interface Env {
   ICONS: R2Bucket;
   AI: Ai;
   DEFAULT_SET_ORDER: string;
+  INDEXNOW_KEY?: string;
 }
 
 export interface CatalogEntry {

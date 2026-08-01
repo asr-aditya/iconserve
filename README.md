@@ -22,6 +22,7 @@ Runs entirely within the **Cloudflare free tier** (Workers + R2 + Workers AI).
 - `GET /sitemap.xml` — every icon page (~10k URLs).
 - `GET /robots.txt` — explicitly **allows** AI crawlers (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, …) and points to the sitemap.
 - Landing page carries `WebSite`+`SearchAction` and `WebAPI` JSON-LD and Open Graph tags.
+- **IndexNow**: key file served at `/{INDEXNOW_KEY}.txt`; `npm run indexnow` pings Bing/Yandex to crawl new or changed URLs instantly (pass paths to submit a subset, e.g. `npm run indexnow /icon/lucide/house`).
 
 ### Transforms (query params on any icon URL)
 

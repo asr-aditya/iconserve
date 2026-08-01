@@ -50,7 +50,7 @@ export async function sitemapXml(env: Env, origin: string): Promise<string> {
   for (const e of catalog.entries) {
     urls.push(`  <url><loc>${origin}/icon/${e.set}/${e.name}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`);
   }
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
 }
 
 // A fuller, self-contained doc some agents fetch as "llms-full.txt": the standard llms.txt
