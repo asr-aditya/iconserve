@@ -203,7 +203,7 @@ h3{font-size:.98rem;margin:20px 0 4px}
 <nav><a href="${origin}/">IconServe</a> / Icons for AI agents</nav>
 
 <h1>Icons for AI agents</h1>
-<p class="lede">IconServe is a free, open-source <strong>SVG icon API</strong> built to be read by AI agents as easily as by people. 10,000+ icons at predictable URLs &mdash; <strong>no API key</strong>, an <strong>MCP icon server</strong>, and an <strong>llms.txt</strong> so models like ChatGPT, Claude, Gemini and Grok can use it directly.</p>
+<p class="lede">IconServe is the <strong>icon library for agentic development</strong> — a free, open-source <strong>SVG icon API</strong> your AI agents can search and embed. 10,000+ icons at predictable URLs &mdash; <strong>no API key</strong>, an <strong>MCP icon server</strong>, and an <strong>llms.txt</strong> so models like ChatGPT, Claude, Gemini and Grok can use it directly.</p>
 <p>
   <a class="cta" href="${origin}/">Search 10,000+ icons</a>
   <a class="cta alt" href="${origin}/integrations">Add to your AI agent</a>
@@ -311,7 +311,7 @@ canonical: ${pageUrl}
 
 # Icons for AI agents
 
-IconServe is a free, open-source SVG icon API built to be read by AI agents as easily as by people. 10,000+ icons at predictable URLs — no API key, an MCP icon server, and an llms.txt so models like ChatGPT, Claude, Gemini and Grok can use it directly.
+IconServe is the icon library for agentic development — a free, open-source SVG icon API your AI agents can search and embed. 10,000+ icons at predictable URLs — no API key, an MCP icon server, and an llms.txt so models like ChatGPT, Claude, Gemini and Grok can use it directly.
 
 ## Three ways an AI agent can get an icon
 

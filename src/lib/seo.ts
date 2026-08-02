@@ -76,7 +76,7 @@ export async function sitemapMd(env: Env, origin: string): Promise<string> {
 
   return `# IconServe sitemap
 
-Free open-source icons for humans and AI agents.
+Icons for agentic development — open-source icons your AI agents can search and embed.
 
 ## Key pages
 

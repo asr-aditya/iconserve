@@ -40,12 +40,20 @@ async function cachedIcon(request: Request, ctx: ExecutionContext, produce: () =
   return resp;
 }
 
+const CANONICAL_ORIGIN = "https://icons-for-agents.site";
+
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
-    const origin = url.origin;
     const path = url.pathname;
+    // Advertise the custom domain in all generated URLs, whichever host actually served us.
+    const origin = CANONICAL_ORIGIN;
 
     if (request.method === "OPTIONS") return preflight();
+
+    // Consolidate SEO + branding on the custom domain: 301 readable (GET/HEAD) traffic off the
+    // legacy workers.dev subdomain. API/MCP (POST) keep working on both hosts so nothing breaks.
+    if (url.hostname.endsWith(".workers.dev") && (request.method === "GET" || request.method === "HEAD"))
+      return Response.redirect(CANONICAL_ORIGIN + path + url.search, 301);
 
     try {
       // ---- MCP ----

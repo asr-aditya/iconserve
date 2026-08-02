@@ -11,9 +11,9 @@ Self-contained handoff so any new session (or person) can pick up. Last updated 
   install; what's missing is **distribution** (telling people it exists). Do NOT fake traffic.
 
 ## Live facts
-- **Live:** https://iconserve.icons-for-agents.workers.dev
+- **Live:** https://icons-for-agents.site
 - **Repo:** https://github.com/asr-aditya/iconserve (public) · local `~/arctan/agent-builder`
-- **MCP endpoint:** `https://iconserve.icons-for-agents.workers.dev/mcp` (streamable-HTTP; tools: `search_icons`, `get_icon`, `list_sets`)
+- **MCP endpoint:** `https://icons-for-agents.site/mcp` (streamable-HTTP; tools: `search_icons`, `get_icon`, `list_sets`)
 - **CF account:** `297ea7e53852547dc74bae89787cf30b`, workers.dev subdomain `icons-for-agents`
 - Stack: Cloudflare Worker + R2 (`iconserve-icons`) + Workers AI + Analytics Engine (`iconserve_events`). All free tier.
 

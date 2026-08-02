@@ -23,7 +23,7 @@ export function apiCatalog(origin: string) {
 export function mcpServerCard(origin: string) {
   const name = "iconserve";
   const version = "0.1.0";
-  const description = "Search and fetch 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG.";
+  const description = "Icons for agentic development: search & fetch 10,000+ open-source icons as SVG or PNG. No API key.";
   return {
     $schema: "https://modelcontextprotocol.io/schemas/draft/server-card.json",
     name,
@@ -138,7 +138,7 @@ export function discoveryLinkHeader(origin: string, extra: string[] = []): strin
 export function agentsMd(origin: string): string {
   return `# IconServe
 
-Free open-source icons for humans and AI agents. 10,000+ icons (Lucide, Heroicons, Tabler, Simple Icons) served as SVG or PNG at predictable URLs. No API key, CORS open.
+Icons for agentic development. 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) your AI agents can search and embed as SVG or PNG at predictable URLs. No API key, CORS open.
 
 ## Overview
 
@@ -174,13 +174,13 @@ No installation, key, or account. Call the HTTPS endpoints directly.
 // Markdown representation of the homepage, served on `Accept: text/markdown`.
 export function homepageMarkdown(origin: string): string {
   return `---
-title: IconServe — open-source icons for humans & AI agents
-description: Free SVG/PNG icon API with no API key. 10,000+ open-source icons, MCP server, llms.txt, semantic search.
+title: IconServe — icons for agentic development
+description: The icon library for agentic development. 10,000+ open-source icons, MCP server, llms.txt, semantic search, no API key.
 ---
 
 # IconServe
 
-Free open-source icons for humans and AI agents — 10,000+ icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG at predictable URLs. No API key.
+Icons for agentic development — 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) your AI agents can search and embed as SVG or PNG at predictable URLs. No API key.
 
 ## Get an icon
 - Best match: \`${origin}/i/{name}.svg\` — e.g. ${origin}/i/home.svg

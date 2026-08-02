@@ -6,9 +6,9 @@ export async function llmsTxt(env: Env, origin: string): Promise<string> {
   const sets = [...new Set(catalog.entries.map((e) => e.set))];
   const total = catalog.entries.length;
 
-  return `# IconServe — static icons for AI agents
+  return `# IconServe — icons for agentic development
 
-> A free service that serves ${total.toLocaleString()} open-source icons (${sets.join(", ")}) as SVG or PNG.
+> The icon library for agentic development: ${total.toLocaleString()} open-source icons (${sets.join(", ")}) your AI agents can search and embed as SVG or PNG.
 > Every icon is reachable at a predictable URL. Recolor, resize, and re-stroke via query params.
 > No API key. CORS is open. Responses are cacheable and immutable.
 

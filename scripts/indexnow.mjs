@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const HOST = "iconserve.icons-for-agents.workers.dev";
+const HOST = "icons-for-agents.site";
 const ORIGIN = `https://${HOST}`;
 const ENDPOINT = "https://api.indexnow.org/indexnow";
 const BATCH = 10000; // IndexNow max URLs per request

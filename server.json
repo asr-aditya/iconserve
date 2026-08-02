@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.asr-aditya/iconserve",
-  "description": "Search 10,000+ open-source icons (Lucide, Heroicons, Tabler, Simple Icons) as SVG or PNG.",
-  "version": "0.1.0",
+  "description": "Icons for agentic development: search & fetch 10,000+ open-source icons as SVG/PNG. No API key.",
+  "version": "0.1.1",
   "status": "active",
   "repository": {
     "url": "https://github.com/asr-aditya/iconserve",
     "source": "github"
   },
-  "website_url": "https://iconserve.icons-for-agents.workers.dev",
+  "website_url": "https://icons-for-agents.site",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://iconserve.icons-for-agents.workers.dev/mcp"
+      "url": "https://icons-for-agents.site/mcp"
     }
   ]
 }

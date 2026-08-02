@@ -2,6 +2,11 @@ name = "iconserve"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[[routes]]
+pattern = "icons-for-agents.site"
+custom_domain = true
 
 # Static landing page + assets served from ./public
 [assets]
