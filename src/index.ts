@@ -10,7 +10,7 @@ import { robotsTxt, sitemapXml, sitemapMd, llmsFullTxt } from "./lib/seo";
 import { renderIconPage, renderIconMarkdown, bestIconPageRedirect, renderAgentsPage, renderAgentsMarkdown } from "./lib/pages";
 import { apiCatalog, mcpServerCard, homepageMarkdown, agentSkillsIndex, findSkill, agentsMd, discoveryLinkHeader } from "./lib/wellknown";
 import { logRequest } from "./lib/analytics";
-import { renderIntegrationsIndex, renderIntegrationPage, CLIENTS } from "./lib/integrations";
+import { renderIntegrationsIndex, renderIntegrationPage } from "./lib/integrations";
 
 const stripExt = (s: string) => s.replace(/\.(svg|png)$/i, "");
 

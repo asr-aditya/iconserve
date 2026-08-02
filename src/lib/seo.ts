@@ -2,7 +2,7 @@ import type { Env } from "../types";
 import { getCatalog } from "./store";
 import { llmsTxt } from "./docs";
 import { SET_INFO } from "./pages";
-import { CLIENTS } from "./integrations";
+import { INTEGRATIONS } from "./integrations";
 
 // Explicitly welcome AI crawlers + search engines and advertise our discovery files.
 export function robotsTxt(origin: string): string {
@@ -53,7 +53,7 @@ export async function sitemapXml(env: Env, origin: string): Promise<string> {
     `  <url><loc>${origin}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`,
     `  <url><loc>${origin}/for-ai-agents</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>`,
     `  <url><loc>${origin}/integrations</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
-    ...CLIENTS.map((c) => `  <url><loc>${origin}/integrations/${c.slug}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`),
+    ...INTEGRATIONS.map((c) => `  <url><loc>${origin}/integrations/${c.slug}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`),
   ];
   for (const e of catalog.entries) {
     urls.push(`  <url><loc>${origin}/icon/${e.set}/${e.name}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`);

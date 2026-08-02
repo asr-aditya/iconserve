@@ -97,6 +97,105 @@ export const CLIENTS: Client[] = [
   },
 ];
 
+// Agent frameworks — wire IconServe's HTTP API in as a tool your agent can call.
+export const FRAMEWORKS: Client[] = [
+  {
+    slug: "openai-agents-sdk",
+    name: "OpenAI Agents SDK",
+    blurb: "Add an icon-finder tool to an OpenAI Agents SDK agent (Python).",
+    steps: (o) => [
+      {
+        title: "Define a function tool that searches IconServe",
+        code: `from agents import Agent, function_tool
+import requests
+
+@function_tool
+def find_icon(query: str) -> str:
+    """Find an icon by name or description; returns a ready-to-use SVG URL."""
+    r = requests.get("${o}/api/search", params={"q": query, "limit": 1}).json()
+    return r["results"][0]["svg_url"] if r["results"] else "no icon found"
+
+agent = Agent(name="UI helper", tools=[find_icon])`,
+      },
+    ],
+    docs: "https://openai.github.io/openai-agents-python/",
+  },
+  {
+    slug: "langchain",
+    name: "LangChain / LangGraph",
+    blurb: "Give a LangChain agent an IconServe search tool (Python).",
+    steps: (o) => [
+      {
+        title: "Define a @tool",
+        code: `from langchain_core.tools import tool
+import requests
+
+@tool
+def find_icon(query: str) -> str:
+    """Search IconServe for an icon; returns a ready-to-use SVG URL."""
+    r = requests.get("${o}/api/search", params={"q": query, "limit": 1}).json()
+    return r["results"][0]["svg_url"] if r["results"] else "no icon found"
+
+# add find_icon to your agent's tools list`,
+      },
+    ],
+    docs: "https://python.langchain.com/docs/how_to/custom_tools/",
+  },
+  {
+    slug: "vercel-ai-sdk",
+    name: "Vercel AI SDK",
+    blurb: "Add an IconServe tool to a Vercel AI SDK agent (TypeScript).",
+    steps: (o) => [
+      {
+        title: "Define a tool()",
+        code: `import { tool } from "ai";
+import { z } from "zod";
+
+export const findIcon = tool({
+  description: "Find an icon by name or description; returns an SVG URL.",
+  parameters: z.object({ query: z.string() }),
+  execute: async ({ query }) => {
+    const r = await fetch(
+      \`${o}/api/search?q=\${encodeURIComponent(query)}&limit=1\`,
+    ).then((r) => r.json());
+    return r.results[0]?.svg_url ?? "no icon found";
+  },
+});`,
+      },
+    ],
+    docs: "https://sdk.vercel.ai/docs/foundations/tools",
+  },
+  {
+    slug: "anthropic-tool-use",
+    name: "Anthropic API (tool use)",
+    blurb: "Define IconServe as a tool for Claude via the Anthropic API (Python).",
+    steps: (o) => [
+      {
+        title: "Declare the tool + handle the call",
+        code: `# tool definition passed to client.messages.create(tools=[...])
+tool = {
+    "name": "find_icon",
+    "description": "Find an icon by name or description; returns an SVG URL.",
+    "input_schema": {
+        "type": "object",
+        "properties": {"query": {"type": "string"}},
+        "required": ["query"],
+    },
+}
+
+# when Claude calls the tool:
+import requests
+def find_icon(query: str) -> str:
+    r = requests.get("${o}/api/search", params={"q": query, "limit": 1}).json()
+    return r["results"][0]["svg_url"] if r["results"] else "no icon found"`,
+      },
+    ],
+    docs: "https://docs.claude.com/en/docs/build-with-claude/tool-use",
+  },
+];
+
+export const INTEGRATIONS: Client[] = [...CLIENTS, ...FRAMEWORKS];
+
 function head(origin: string, title: string, desc: string, canonical: string): string {
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -113,21 +212,25 @@ function head(origin: string, title: string, desc: string, canonical: string): s
 
 export function renderIntegrationsIndex(origin: string): Response {
   const canonical = `${origin}/integrations`;
-  const cards = CLIENTS.map(
-    (c) => `<a href="${origin}/integrations/${c.slug}"><b>${esc(c.name)}</b><br><span>${esc(c.blurb)}</span></a>`,
-  ).join("\n");
-  const html = `${head(origin, "Add IconServe to your AI agent — MCP integrations · IconServe", "Add IconServe's free icon MCP server to Claude Code, Claude Desktop, Cursor, Windsurf, Cline, or any MCP client. No API key.", canonical)}
+  const card = (c: Client) =>
+    `<a href="${origin}/integrations/${c.slug}"><b>${esc(c.name)}</b><br><span>${esc(c.blurb)}</span></a>`;
+  const clientCards = CLIENTS.map(card).join("\n");
+  const frameworkCards = FRAMEWORKS.map(card).join("\n");
+  const html = `${head(origin, "Add IconServe to your AI agent — MCP & framework integrations · IconServe", "Add IconServe (icons for agentic development) to Claude, Cursor, Windsurf, Cline, LangChain, OpenAI Agents SDK, or the Vercel AI SDK. No API key.", canonical)}
 <nav><a href="${origin}/">IconServe</a> / Integrations</nav>
 <h1>Add IconServe to your AI agent</h1>
-<p class="lede" style="color:var(--muted)">IconServe is a free, remote <strong>MCP icon server</strong> — 10,000+ open-source icons, no API key. Pick your client:</p>
-<div class="client-list">${cards}</div>
+<p class="lede" style="color:var(--muted)">IconServe is the icon library for agentic development — 10,000+ open-source icons, no API key. Wire it into your agent:</p>
+<h2>MCP clients</h2>
+<div class="client-list">${clientCards}</div>
+<h2>Agent frameworks</h2>
+<div class="client-list">${frameworkCards}</div>
 <p style="margin-top:20px"><a href="${origin}/for-ai-agents">Or use the plain HTTP API / llms.txt →</a></p>
 </div></body></html>`;
   return html2(html);
 }
 
 export function renderIntegrationPage(origin: string, slug: string): Response | null {
-  const c = CLIENTS.find((x) => x.slug === slug);
+  const c = INTEGRATIONS.find((x) => x.slug === slug);
   if (!c) return null;
   const canonical = `${origin}/integrations/${c.slug}`;
   const steps = c
