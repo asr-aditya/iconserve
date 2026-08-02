@@ -31,7 +31,8 @@ Self-contained handoff so any new session (or person) can pick up. Last updated 
   + sitemap; **IndexNow** live (`npm run indexnow`) — all URLs submitted.
 - Analytics: Analytics Engine instrumentation (agent/human/bot classification, route, MCP funnel, raw UA,
   `?ref=` campaign tag). Query with `npm run analytics [days]` (needs a CF API token, see below).
-- **Integration pages** (zero-friction install): `/integrations` + `/integrations/{claude-code,claude-desktop,cursor,windsurf,cline,any-mcp-client}`.
+- **Integration pages** (zero-friction install): `/integrations` + MCP clients `{claude-code,claude-desktop,cursor,windsurf,cline,any-mcp-client}` + agent frameworks `{openai-agents-sdk,langchain,vercel-ai-sdk,anthropic-tool-use}`.
+- **awesome-mcp-servers listing:** PR https://github.com/punkpeye/awesome-mcp-servers/pull/11383 (opened via agent fast-track; check if merged).
 
 ## ▶️ IMMEDIATE NEXT STEP: distribution (the only thing between us and 10 agents)
 Full post drafts were written this session (regenerate if lost). Post these FREE, spaced over a few days,
@@ -43,7 +44,7 @@ engage with every comment. Each links to a `?ref=`-tagged URL so `npm run analyt
 | 2 | Show HN | news.ycombinator.com/submit | hn | ⬜ user to post |
 | 3 | r/ClaudeAI | reddit.com/r/ClaudeAI/submit | reddit-claude | ⬜ user to post |
 | 4 | X/Twitter | x.com/compose/post | x | ⬜ user to post |
-| 5 | awesome-mcp-servers | github.com/punkpeye/awesome-mcp-servers (PR) | — | ⬜ user to PR |
+| 5 | awesome-mcp-servers | github.com/punkpeye/awesome-mcp-servers (PR) | — | ✅ PR #11383 opened (agent fast-track) |
 | 6 | dev.to article | dev.to/new | devto | ⬜ user to post |
 | 7 | r/LocalLLaMA, MCP Discords | (secondary) | reddit-localllama / discord | ⬜ optional |
 
