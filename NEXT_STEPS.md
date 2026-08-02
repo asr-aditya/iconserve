@@ -56,9 +56,22 @@ npm run analytics 1        # Campaign attribution table = which post drove click
 ```
 Double down on whichever `?ref=` converts.
 
+## Domain: icons-for-agents.site (custom domain, DONE)
+- Live on `https://icons-for-agents.site`; brand positioning = **"icons for agentic development."**
+- Worker forces canonical origin to the custom domain and **301-redirects GET/HEAD off workers.dev**
+  (API/MCP POST still work on both). All generated URLs, sitemap, robots, canonicals use the new domain.
+- IndexNow re-submitted for the new domain (Bing/Yandex/etc.).
+- **PENDING user actions for the new domain:**
+  - Google Search Console: add `icons-for-agents.site` as a URL-prefix property, verify (Claude wires the
+    HTML-tag token into index.html), submit `sitemap.xml`, request indexing on the homepage.
+  - Bing Webmaster: add/import `icons-for-agents.site`, submit sitemap (IndexNow already triggers crawl).
+  - Re-publish `server.json` to the MCP registry: `mcp-publisher login github` then `mcp-publisher publish`
+    (JWT expired; manifest already points to the new domain + v0.1.1). Existing registry entry still works
+    (old workers.dev/mcp POST is not redirected).
+  - Optional: enable DNSSEC + add DNS-AID `_agents` SVCB/HTTPS records (the one agent-readiness check a
+    custom domain unlocks).
+
 ## Remaining supporting levers (after posts)
-- **Custom domain** — biggest structural lever. Unlocks DNS-AID (agent-readiness), fixes workers.dev SEO
-  penalty, ranks for its own name, enables branded icon URLs (each embedded `<img>` = a backlink). ~$12/yr.
 - More MCP registries needing manual submit: **LobeHub**, **PopularAiTools**, **Cursor directory**.
 - Backlinks/content: guides, "IconServe + <tool>" tutorials.
 
