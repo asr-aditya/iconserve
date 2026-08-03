@@ -4,6 +4,8 @@ import { search } from "./search";
 import { renderIcon } from "./icons";
 import { svgUrl } from "./urls";
 import { logMcp } from "./analytics";
+import { createAnalyticsRecorder, resolveStatelessHttpSession } from "@armature-tech/mcp-analytics";
+import type { AnalyticsRecorder } from "@armature-tech/mcp-analytics";
 
 // Minimal stateless Streamable-HTTP MCP server (JSON-RPC 2.0 over POST).
 const PROTOCOL_VERSION = "2024-11-05";
@@ -112,7 +114,30 @@ async function callTool(env: Env, origin: string, name: string, args: any) {
   return { ...toolText(`unknown tool: ${name}`), isError: true };
 }
 
-export async function handleMcp(request: Request, env: Env, origin: string): Promise<Response> {
+// Armature analytics (Shape C — dispatcher). Built per request so delivery can hook into
+// this invocation's waitUntil. No-ops silently when ANALYTICS_INGEST_API_KEY is unset.
+function buildRecorder(env: Env, ctx: ExecutionContext | undefined, origin: string): AnalyticsRecorder {
+  const recorder = createAnalyticsRecorder({
+    armature: {
+      apiKey: env.ANALYTICS_INGEST_API_KEY,
+      endpointUrl: env.ANALYTICS_INGEST_URL,
+      // Workers freeze after the response; hand delivery to waitUntil, else await it.
+      delivery: ctx ? "background" : "await",
+      schedule: ctx ? (work) => ctx.waitUntil(work) : undefined,
+      // Keep the advertised tool list to our documented three (server card, llms.txt,
+      // registries all promise search_icons/get_icon/list_sets). Flip to enable Armature's
+      // built-in capability-request tool.
+      requestCapability: false,
+      onError: (err) => console.error("armature ingest error:", err),
+    },
+  });
+  for (const def of TOOLS) {
+    recorder.tool(def, async (args) => callTool(env, origin, def.name, args));
+  }
+  return recorder;
+}
+
+export async function handleMcp(request: Request, env: Env, origin: string, ctx?: ExecutionContext): Promise<Response> {
   if (request.method === "GET") {
     // No server-initiated stream in this stateless implementation.
     return new Response("MCP endpoint. POST JSON-RPC here.", { status: 200, headers: { "content-type": "text/plain" } });
@@ -124,12 +149,18 @@ export async function handleMcp(request: Request, env: Env, origin: string): Pro
     return Response.json(rpcError(null, -32700, "Parse error"), { status: 200 });
   }
 
+  const analytics = buildRecorder(env, ctx, origin);
+  // Stateless HTTP: mint an identity-bearing session id at initialize that the client
+  // echoes back, so tool calls attribute to a real session + client instead of "unknown".
+  const session = resolveStatelessHttpSession({ body, headers: request.headers });
+
   const handle = async (msg: any) => {
     const { id, method, params } = msg || {};
     if (method && method !== "notifications/initialized")
       logMcp(env, request, method, method === "tools/call" ? String(params?.name || "") : "");
     switch (method) {
       case "initialize":
+        await analytics.recordSessionInit({ sessionId: session.sessionId, clientInfo: session.clientInfo });
         return rpcResult(id, {
           protocolVersion: PROTOCOL_VERSION,
           capabilities: { tools: {} },
@@ -141,10 +172,12 @@ export async function handleMcp(request: Request, env: Env, origin: string): Pro
       case "ping":
         return rpcResult(id, {});
       case "tools/list":
-        return rpcResult(id, { tools: TOOLS });
+        return rpcResult(id, { tools: analytics.toolDefinitions() });
       case "tools/call":
         try {
-          const out = await callTool(env, origin, params?.name, params?.arguments || {});
+          const out = await analytics.dispatch(String(params?.name), params?.arguments || {}, {
+            ...session.dispatchContext,
+          });
           return rpcResult(id, out);
         } catch (e: any) {
           return rpcError(id, -32603, `tool error: ${e?.message || e}`);
@@ -155,11 +188,14 @@ export async function handleMcp(request: Request, env: Env, origin: string): Pro
     }
   };
 
+  // Issue the session id only at initialize; the client echoes it on later requests.
+  const sessionHeader = session.isInitialize ? { "mcp-session-id": session.sessionId } : undefined;
+
   if (Array.isArray(body)) {
     const out = (await Promise.all(body.map(handle))).filter((x) => x !== null);
-    return Response.json(out, { status: 200 });
+    return Response.json(out, { status: 200, headers: sessionHeader });
   }
   const out = await handle(body);
   if (out === null) return new Response(null, { status: 202 });
-  return Response.json(out, { status: 200 });
+  return Response.json(out, { status: 200, headers: sessionHeader });
 }

@@ -5,6 +5,9 @@ export interface Env {
   DEFAULT_SET_ORDER: string;
   INDEXNOW_KEY?: string;
   ANALYTICS?: AnalyticsEngineDataset;
+  // Armature MCP analytics (set via `wrangler secret put`; SDK no-ops when absent).
+  ANALYTICS_INGEST_API_KEY?: string;
+  ANALYTICS_INGEST_URL?: string;
 }
 
 export interface CatalogEntry {

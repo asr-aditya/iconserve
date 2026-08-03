@@ -26,6 +26,8 @@
     "wrangler": "^4.118.0"
   },
   "dependencies": {
+    "@armature-tech/mcp-analytics": "^0.6.36",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@resvg/resvg-wasm": "^2.6.2"
   }
 }

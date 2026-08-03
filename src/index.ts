@@ -58,7 +58,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
     try {
       // ---- MCP ----
       if (path === "/mcp" || path === "/mcp/") {
-        return await handleMcp(request, env, origin);
+        return await handleMcp(request, env, origin, ctx);
       }
 
       // ---- Discovery docs ----

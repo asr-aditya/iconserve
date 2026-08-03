@@ -1,0 +1,8 @@
+# Armature MCP analytics — copy to `.dev.vars` for local dev (git-ignored).
+# In production these are set as encrypted Worker secrets:
+#   npx wrangler secret put ANALYTICS_INGEST_API_KEY
+#   npx wrangler secret put ANALYTICS_INGEST_URL
+# The SDK silently no-ops when ANALYTICS_INGEST_API_KEY is absent, so local dev
+# works fine without it.
+ANALYTICS_INGEST_API_KEY=ami_us_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ANALYTICS_INGEST_URL=https://app.armature.tech/api/mcp-analytics/ingest
