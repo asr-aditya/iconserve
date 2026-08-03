@@ -6,8 +6,11 @@ const AGENT_UAS: [RegExp, string][] = [
   [/claude-code/i, "claude-code"], // MCP client (Claude Code / Desktop) — often your own dev connection
   [/cursor/i, "cursor"],
   [/cline|roo-?code|continue\.dev|windsurf/i, "ide-agent"],
-  [/gptbot|oai-searchbot|chatgpt-user/i, "chatgpt"],
-  [/claude|anthropic/i, "claude"],
+  [/gptbot/i, "gptbot"], // OpenAI training crawler (not a user-driven agent)
+  [/oai-searchbot|chatgpt-user/i, "chatgpt"],
+  [/claudebot/i, "claudebot"], // Anthropic training crawler (not a user-driven agent)
+  [/claude-user|claude-searchbot/i, "claude"],
+  [/anthropic/i, "claude"],
   [/perplexity/i, "perplexity"],
   [/google-extended|googleother|gemini/i, "google"],
   [/bingbot|bingpreview/i, "bing"],
@@ -21,8 +24,10 @@ const AGENT_UAS: [RegExp, string][] = [
   [/youbot/i, "you"],
 ];
 // Monitoring/uptime and protocol crawlers — infrastructure, not demand. Kept as `bot`.
-const MONITOR_UA = /sentineloracle|uptimerobot|pingdom|betteruptime|statuscake|healthcheck|liveness|datadog|newrelic/i;
-const CRAWLER_UA = /402explorer|paygent|x402|mcp-scan|smithery/i;
+const MONITOR_UA = /sentineloracle|uptimerobot|pingdom|betteruptime|statuscake|healthcheck|liveness|datadog|newrelic|mcpbeat|mcpwitness|akashi|health probe/i;
+// MCP directory crawlers, registry indexers and security auditors that found us via the
+// MCP registry. Ecosystem infrastructure inspecting the server — discovery, not demand.
+const CRAWLER_UA = /402explorer|paygent|x402|mcp-scan|smithery|verifymcp|agenstry|aisec-registry|sasame-mcp-audit|agentindexbot|agent-tools\.cloud|mcp-rugpull|rugpull-research/i;
 const SCRIPT_UA = /python-requests|python-httpx|aiohttp|node-fetch|undici|axios|go-http-client|okhttp|curl|wget|libwww|java\/|ruby|scrapy|postman|insomnia/i;
 const BROWSER_UA = /mozilla|applewebkit|chrome|safari|firefox|edg\/|gecko/i;
 

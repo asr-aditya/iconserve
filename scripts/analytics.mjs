@@ -87,6 +87,22 @@ async function main() {
     ["tool", "calls"],
   );
 
+  // ==== THE GOAL METRIC ====
+  // Real organic usage: an external agent that actually invoked a tool. Excludes our own
+  // claude-code dev client, bots/monitors/registry crawlers, and auth-probe pseudo-tools.
+  console.log("\n*** GOAL METRIC — organic agent tool calls (excl. our own client, probes, bots) ***");
+  table(
+    await q(
+      `SELECT blob2 AS family, blob9 AS tool, SUM(_sample_interval) AS calls FROM ${DATASET}
+       WHERE ${WINDOW} AND blob3 = 'mcp-rpc' AND blob8 = 'tools/call'
+         AND blob9 NOT LIKE '%probe%' AND blob9 != ''
+         AND blob2 NOT IN ('claude-code','script','monitor','protocol-crawler','claudebot','gptbot')
+         AND blob1 = 'agent'
+       GROUP BY family, tool ORDER BY calls DESC`,
+    ),
+    ["family", "tool", "calls"],
+  );
+
   console.log("\nUnclassified User-Agents (bot/unknown — candidates to add to the classifier):");
   table(
     await q(`SELECT blob10 AS user_agent, SUM(_sample_interval) AS hits FROM ${DATASET} WHERE ${WINDOW} AND blob1 = 'bot' AND blob10 != '' GROUP BY user_agent ORDER BY hits DESC LIMIT 15`),
